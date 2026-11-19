@@ -55,3 +55,4 @@ Les autres branches arrivent au fil des mises à jour du manoir.
 
 - Ne modifie pas `.github/workflows/manoir.yml` : le manoir n'accepte que les résultats de son propre workflow.
 - Aucun secret dans le code : les clés vont dans les secrets GitHub ou les variables d'environnement.
+
