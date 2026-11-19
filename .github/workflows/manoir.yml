@@ -2,7 +2,7 @@
 #
 # À chaque push sur une branche exercice/…, NOS tests cachés tournent sur ta Lanterne, puis le résultat est envoyé
 # au manoir. La première fois, mets le code de liaison (Mon compte → Ton dépôt GitHub) dans le secret MANOIR_CODE.
-# Ne modifie pas ce fichier : le manoir n'accepte que les résultats de son propre workflow, à sa version épinglée.
+# Ne modifie pas ce fichier : le manoir n'accepte que les résultats de son propre workflow (celui du dépôt formation-tests, sur main).
 name: Manoir
 
 on:
@@ -23,7 +23,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: woodenkoder/formation-tests/.github/workflows/correction.yml@v1
+    uses: woodenkoder/formation-tests/.github/workflows/correction.yml@main
     with:
       branche: ${{ inputs.exercice || github.ref_name }}
     secrets:
