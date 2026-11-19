@@ -1,0 +1,30 @@
+# La correction de tes combats par le manoir (PROD READY · La Maison hantée de la prod).
+#
+# À chaque push sur une branche exercice/…, NOS tests cachés tournent sur ta Lanterne, puis le résultat est envoyé
+# au manoir. La première fois, mets le code de liaison (Mon compte → Ton dépôt GitHub) dans le secret MANOIR_CODE.
+# Ne modifie pas ce fichier : le manoir n'accepte que les résultats de son propre workflow, à sa version épinglée.
+name: Manoir
+
+on:
+  push:
+    branches: ['exercice/**']
+  workflow_dispatch:
+    inputs:
+      exercice:
+        description: La branche exercice/… à corriger (vide = la branche choisie ci-dessus)
+        required: false
+
+permissions: {}
+
+jobs:
+  correction:
+    # Le modèle lui-même n'est relié à aucun élève : la correction ne tourne que dans TA copie.
+    if: github.repository != 'woodenkoder/formation-projet'
+    permissions:
+      contents: read
+      id-token: write
+    uses: woodenkoder/formation-tests/.github/workflows/correction.yml@v1
+    with:
+      branche: ${{ inputs.exercice || github.ref_name }}
+    secrets:
+      code: ${{ secrets.MANOIR_CODE }}
