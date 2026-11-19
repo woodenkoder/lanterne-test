@@ -1,0 +1,30 @@
+# La Lanterne et sa base : docker compose up -d
+services:
+  base:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: lanterne
+      POSTGRES_USER: lanterne
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lanterne}
+    volumes:
+      - donnees:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lanterne -d lanterne"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    environment:
+      DB_URL: jdbc:postgresql://base:5432/lanterne
+      DB_USER: lanterne
+      DB_PASSWORD: ${DB_PASSWORD:-lanterne}
+    ports:
+      - "8080:8080"
+    depends_on:
+      base:
+        condition: service_healthy
+
+volumes:
+  donnees:
