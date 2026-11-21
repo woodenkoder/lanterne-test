@@ -1,0 +1,33 @@
+# Le déploiement de la Lanterne : une image par tag, construite une fois, vérifiée, réversible.
+name: Déployer
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  deployer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: L'image, construite une seule fois
+        run: docker build -t "ghcr.io/${GITHUB_REPOSITORY,,}:${GITHUB_REF_NAME}" .
+      - name: Publier l'image avec le tag
+        env:
+          JETON: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "$JETON" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker push "ghcr.io/${GITHUB_REPOSITORY,,}:${GITHUB_REF_NAME}"
+      - name: Déployer, vérifier, sinon revenir au tag précédent
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          precedent=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)
+          deploy/deployer.sh "$image:$GITHUB_REF_NAME" "${precedent:+$image:$precedent}"
