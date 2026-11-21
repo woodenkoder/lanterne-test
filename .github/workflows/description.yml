@@ -1,0 +1,33 @@
+# Le contrôle de description de l'équipe : chaque PR suit le modèle (.github/pull_request_template.md).
+name: Description de la PR
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  description:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: La description suit le modèle
+        env:
+          DESCRIPTION: ${{ github.event.pull_request.body }}
+        run: |
+          python3 - <<'PY'
+          import os, re, sys
+          texte = os.environ.get("DESCRIPTION") or ""
+          erreurs = []
+          if "<!--" in texte:
+              erreurs.append("Il reste un commentaire du modèle (<!-- … -->) : remplace-le par ton texte.")
+          for titre in ("Contexte", "Changements", "Comment tester", "Risques"):
+              m = re.search(rf"^##\s*{titre}\s*$(.*?)(?=^##\s|\Z)", texte, re.M | re.S)
+              if not m or not m.group(1).strip():
+                  erreurs.append(f"La section « {titre} » manque ou est vide.")
+          for e in erreurs:
+              print(f"::error::{e}")
+          sys.exit(1 if erreurs else 0)
+          PY
