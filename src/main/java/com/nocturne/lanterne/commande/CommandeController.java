@@ -1,6 +1,7 @@
 package com.nocturne.lanterne.commande;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,5 +23,10 @@ public class CommandeController {
     @ResponseStatus(HttpStatus.CREATED)
     public CommandeCreee creer(@RequestBody NouvelleCommande commande) {
         return service.creer(commande);
+    }
+
+    @PostMapping("/{id}/annulation")
+    public CommandeCreee annuler(@PathVariable long id) {
+        return service.annuler(id);
     }
 }
