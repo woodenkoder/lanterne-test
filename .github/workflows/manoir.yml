@@ -25,6 +25,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      # Lire la description de ta pull request (combat 12.3).
+      pull-requests: read
     uses: woodenkoder/formation-tests/.github/workflows/correction.yml@main
     with:
       branche: ${{ inputs.exercice || github.ref_name }}
